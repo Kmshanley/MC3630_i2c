@@ -1,9 +1,5 @@
 #include "MC3630_i2c.h"
 
-#define I2C_MASTER_NUM              I2C_NUM_0
-#define WRITE_BIT I2C_MASTER_WRITE  /*!< I2C master write */
-#define READ_BIT I2C_MASTER_READ    /*!< I2C master read */
-
 static const char *TAG = "MC3630 driver";
 
 static inline esp_err_t write_reg_8_nolock(MC3630_t *dev, uint8_t reg, uint8_t data);
@@ -96,7 +92,7 @@ void MC3630_setMode(MC3630_t *dev, MC3630_mode_t mode) {
     I2C_DEV_GIVE_MUTEX(&dev->i2c_dev);
 }
 
-void MC3630_startSNIFF(MC3630_t *dev, MC3630_sniff_sr_t rate, MC3630_andorn_t logicandor, MC3630_sniff_mode_t sniff_mode) {
+void MC3630_startSNIFF(MC3630_t *dev, MC3630_sniff_sr_t rate, MC3630_andorn_t logicandor, MC3630_sniff_mode_t sniff_mode, bool activeHigh) {
     MC3630_setMode(dev, MC3630_MODE_STANDBY); //set to standby to be able to write
     I2C_DEV_TAKE_MUTEX(&dev->i2c_dev);
 
@@ -133,7 +129,17 @@ void MC3630_startSNIFF(MC3630_t *dev, MC3630_sniff_sr_t rate, MC3630_andorn_t lo
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_SNIFFTH_C, &value, 1); //set global sniff control
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_SNIFF_C, &rate, 1); //set sniff rate
 
-    uint8_t intEnable = 0x4; //mask for sniff interrupt
+    uint8_t intEnable;
+    // Generate an interrupt when activity is detected in SNIFF mode and the device auto-transitions to CWAKE mode.
+    if (activeHigh) {
+        // Interrupt request is active high.
+        // INTN pin is configured for active drive or “push-pull” mode. Drive level is to VDDIO.
+        intEnable = 0b00000111;
+    }
+    else {
+        intEnable = 0b00000100; //mask for sniff interrupt
+    }
+
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_INTR_C, &intEnable, 1); //enable interrupt
     
     uint8_t data = 0x42;

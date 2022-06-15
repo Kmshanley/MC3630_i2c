@@ -164,7 +164,7 @@ uint8_t MC3630_getChipID(MC3630_t *dev);
 uint8_t MC3630_read_accel(MC3630_t *dev, int16_t * accelX, int16_t * accelY, int16_t * accelZ);
 void MC3630_setMode(MC3630_t *dev, MC3630_mode_t mode);
 void MC3630_setResolution(MC3630_t *dev, MC3630_resolution_t res);
-void MC3630_startSNIFF(MC3630_t *dev, MC3630_sniff_sr_t rate, MC3630_andorn_t logicandor, MC3630_sniff_mode_t sniff_mode);
+void MC3630_startSNIFF(MC3630_t *dev, MC3630_sniff_sr_t rate, MC3630_andorn_t logicandor, MC3630_sniff_mode_t sniff_mode, bool activeHigh);
 void MC3630_setSniffThreshhold(MC3630_t *dev, char axis, uint8_t sniff_thres);
 void MC3630_setSniffDectCount(MC3630_t *dev, char axis, uint8_t sniff_dect_cnt);
 void MC3630_setRangeResolution(MC3630_t *dev, MC3630_range_t range, MC3630_resolution_t res);
