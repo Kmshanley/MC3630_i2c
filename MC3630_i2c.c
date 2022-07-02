@@ -6,7 +6,7 @@ static inline esp_err_t write_reg_8_nolock(MC3630_t *dev, uint8_t reg, uint8_t d
 
 esp_err_t MC3630_init_desc(MC3630_t *dev, uint8_t addr, i2c_port_t port, gpio_num_t sda_gpio, gpio_num_t scl_gpio) 
 {
-    if (addr != MC3630_I2C_ADDR_HIGH ||  addr != MC3630_I2C_ADDR_LOW)
+    if (addr != MC3630_I2C_ADDR_HIGH && addr != MC3630_I2C_ADDR_LOW)
     {
         ESP_LOGE(TAG, "Invalid I2C address");
         return ESP_ERR_INVALID_ARG;
@@ -28,7 +28,7 @@ esp_err_t MC3630_init_sensor(MC3630_t *dev)
     I2C_DEV_TAKE_MUTEX(&dev->i2c_dev);
 
     uint8_t data;
-    data = 0x01000000; //I2C_EN
+    data = 0b00000001; //Standby mode
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_MODE_C, &data, 1); //Put into standby
     data = 0x40;
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_RESET, &data, 1); //reset
