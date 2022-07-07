@@ -23,6 +23,11 @@ esp_err_t MC3630_init_desc(MC3630_t *dev, uint8_t addr, i2c_port_t port, gpio_nu
     return i2c_dev_create_mutex(&dev->i2c_dev);
 }
 
+esp_err_t MC3630_free_desc(MC3630_t *dev)
+{
+    return i2c_dev_delete_mutex(&dev->i2c_dev);
+}
+
 esp_err_t MC3630_init_sensor(MC3630_t *dev) 
 {
     I2C_DEV_TAKE_MUTEX(&dev->i2c_dev);

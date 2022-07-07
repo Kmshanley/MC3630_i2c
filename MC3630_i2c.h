@@ -159,6 +159,7 @@ typedef struct
 } MC3630_t;
 
 esp_err_t MC3630_init_desc(MC3630_t *dev, uint8_t addr, i2c_port_t port, gpio_num_t sda_gpio, gpio_num_t scl_gpio);
+esp_err_t MC3630_free_desc(MC3630_t *dev);
 esp_err_t MC3630_init_sensor(MC3630_t *dev);
 uint8_t MC3630_getChipID(MC3630_t *dev);
 uint8_t MC3630_read_accel(MC3630_t *dev, int16_t * accelX, int16_t * accelY, int16_t * accelZ);
