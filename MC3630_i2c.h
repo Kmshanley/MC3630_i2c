@@ -163,7 +163,7 @@ esp_err_t MC3630_init_desc(MC3630_t *dev, uint8_t addr, i2c_port_t port, gpio_nu
 esp_err_t MC3630_free_desc(MC3630_t *dev);
 esp_err_t MC3630_init_sensor(MC3630_t *dev);
 uint8_t MC3630_getChipID(MC3630_t *dev);
-uint8_t MC3630_read_accel(MC3630_t *dev, int16_t * accelX, int16_t * accelY, int16_t * accelZ);
+esp_err_t MC3630_read_accel(MC3630_t *dev, int16_t * accelX, int16_t * accelY, int16_t * accelZ);
 void MC3630_setMode(MC3630_t *dev, MC3630_mode_t mode);
 void MC3630_setResolution(MC3630_t *dev, MC3630_resolution_t res);
 void MC3630_startSNIFF(MC3630_t *dev, MC3630_sniff_sr_t rate, MC3630_andorn_t logicandor, MC3630_sniff_mode_t sniff_mode, bool activeHigh);

@@ -32,6 +32,18 @@ esp_err_t MC3630_init_sensor(MC3630_t *dev)
 {
     I2C_DEV_TAKE_MUTEX(&dev->i2c_dev);
 
+    uint8_t devID;
+    esp_err_t err;
+    err = i2c_dev_read_reg(&dev->i2c_dev, MC3630_CHIP_ID, &devID, 1);
+
+    if (err != ESP_OK) {
+        return err;
+    }
+
+    if (devID != 0x71) {
+		return ESP_ERR_NOT_FOUND;;
+	}
+
     uint8_t data;
     data = 0b00000001; //Standby mode
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_MODE_C, &data, 1); //Put into standby
@@ -55,17 +67,9 @@ esp_err_t MC3630_init_sensor(MC3630_t *dev)
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_INIT_2, &data, 1);
     i2c_dev_write_reg(&dev->i2c_dev, MC3630_INIT_3, &data, 1);
 
-	uint8_t devID;
-    i2c_dev_read_reg(&dev->i2c_dev, MC3630_CHIP_ID, &devID, 1);
-
     I2C_DEV_GIVE_MUTEX(&dev->i2c_dev);
 
-	if (devID == 0x71) {
-		return true;
-	}
-	else {
-		return false;
-	}
+    return ESP_OK;
 }
 
 uint8_t MC3630_getChipID(MC3630_t *dev) {
@@ -76,11 +80,15 @@ uint8_t MC3630_getChipID(MC3630_t *dev) {
 	return devID;
 }
 
-uint8_t MC3630_read_accel(MC3630_t *dev, int16_t * accelX, int16_t * accelY, int16_t * accelZ) 
+esp_err_t MC3630_read_accel(MC3630_t *dev, int16_t * accelX, int16_t * accelY, int16_t * accelZ) 
 {
     I2C_DEV_TAKE_MUTEX(&dev->i2c_dev);
     uint8_t rawData[6];
-    i2c_dev_read_reg(&dev->i2c_dev, MC3630_XOUT_LSB, &rawData, 6); //read all data in one go
+    esp_err_t err;
+    err = i2c_dev_read_reg(&dev->i2c_dev, MC3630_XOUT_LSB, &rawData, 6); //read all data in one go
+    if (err != ESP_OK) {
+        return err;
+    }
 
     *accelX = (short)((((unsigned short)rawData[1]) << 8) | rawData[0]);
     *accelY = (short)((((unsigned short)rawData[3]) << 8) | rawData[2]);
@@ -88,7 +96,7 @@ uint8_t MC3630_read_accel(MC3630_t *dev, int16_t * accelX, int16_t * accelY, int
 
     I2C_DEV_GIVE_MUTEX(&dev->i2c_dev);
 
-    return true;
+    return ESP_OK;
 }
 
 void MC3630_setMode(MC3630_t *dev, MC3630_mode_t mode) {
